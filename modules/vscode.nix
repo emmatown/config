@@ -23,11 +23,19 @@ lib.mkIf pkgs.stdenv.isLinux {
       After = [ "default.target" ];
     };
 
-    Service = {
-      ExecStart = "${lib.getExe pkgs.vscode} serve-web --host 127.0.0.1 --port 8000 --without-connection-token --accept-server-license-terms --disable-telemetry";
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
+    Service =
+      let
+        vscodeDataDir = "${config.home.homeDirectory}/.vscode";
+        vscodeExtensionsDir = "${vscodeDataDir}/extensions";
+        vscodeUserDataDir = "${config.xdg.configHome}/${config.programs.vscode.nameShort}";
+        vscodeCliDataDir = "${vscodeDataDir}/cli";
+        vscodeServeWebDataDir = "${vscodeDataDir}/serve-web";
+      in
+      {
+        ExecStart = "${lib.getExe pkgs.vscode} --user-data-dir ${vscodeUserDataDir} --extensions-dir ${vscodeExtensionsDir} serve-web --cli-data-dir ${vscodeCliDataDir} --server-data-dir ${vscodeServeWebDataDir} --host 127.0.0.1 --port 8000 --without-connection-token --accept-server-license-terms --disable-telemetry";
+        Restart = "on-failure";
+        RestartSec = 5;
+      };
 
     Install = {
       WantedBy = [ "default.target" ];
