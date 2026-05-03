@@ -8,7 +8,7 @@
 lib.mkIf pkgs.stdenv.isLinux {
   programs.vscode = {
     enable = true;
-    package = pkgs.vscode;
+    package = pkgs.openvscode-server;
     profiles.default = {
       extensions = [ pkgs.nix-vscode-extensions.vscode-marketplace.adamgirton.gloom ];
       userSettings = {
@@ -19,20 +19,18 @@ lib.mkIf pkgs.stdenv.isLinux {
 
   systemd.user.services.vscode-serve-web = {
     Unit = {
-      Description = "Visual Studio Code serve-web";
+      Description = "OpenVSCode Server";
       After = [ "default.target" ];
     };
 
     Service =
       let
-        vscodeDataDir = "${config.home.homeDirectory}/.vscode";
-        vscodeExtensionsDir = "${vscodeDataDir}/extensions";
-        vscodeUserDataDir = "${config.xdg.configHome}/${config.programs.vscode.nameShort}";
-        vscodeCliDataDir = "${vscodeDataDir}/cli";
-        vscodeServeWebDataDir = "${vscodeDataDir}/serve-web";
+        serverDataDir = "${config.home.homeDirectory}/${config.programs.vscode.dataFolderName}";
+        extensionsDir = "${serverDataDir}/extensions";
+        userDataDir = "${config.xdg.configHome}/${config.programs.vscode.nameShort}";
       in
       {
-        ExecStart = "${lib.getExe pkgs.vscode} --user-data-dir ${vscodeUserDataDir} --extensions-dir ${vscodeExtensionsDir} serve-web --cli-data-dir ${vscodeCliDataDir} --server-data-dir ${vscodeServeWebDataDir} --host 127.0.0.1 --port 8000 --without-connection-token --accept-server-license-terms --disable-telemetry";
+        ExecStart = "${lib.getExe config.programs.vscode.package} --host 127.0.0.1 --port 8000 --without-connection-token --accept-server-license-terms --telemetry-level off --user-data-dir ${userDataDir} --server-data-dir ${serverDataDir} --extensions-dir ${extensionsDir}";
         Restart = "on-failure";
         RestartSec = 5;
       };
