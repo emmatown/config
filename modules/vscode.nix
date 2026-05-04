@@ -23,11 +23,15 @@ lib.mkIf pkgs.stdenv.isLinux {
       After = [ "default.target" ];
     };
 
-    Service = {
-      ExecStart = "${lib.getExe config.programs.vscode.package} --host 127.0.0.1 --port 8000 --without-connection-token --accept-server-license-terms --telemetry-level off";
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
+    Service =
+      let
+        userDataDir = "${config.xdg.configHome}/${config.programs.vscode.nameShort}";
+      in
+      {
+        ExecStart = "${lib.getExe config.programs.vscode.package} --host 127.0.0.1 --port 8000 --without-connection-token --accept-server-license-terms --telemetry-level off --user-data-dir ${userDataDir}";
+        Restart = "on-failure";
+        RestartSec = 5;
+      };
 
     Install = {
       WantedBy = [ "default.target" ];
