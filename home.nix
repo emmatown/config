@@ -11,7 +11,6 @@
     ./modules/vcs.nix
     ./modules/nix.nix
     ./modules/js.nix
-    ./modules/vscode.nix
   ];
 
   home = {
