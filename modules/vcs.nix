@@ -24,17 +24,21 @@ in
 
   programs.jujutsu = {
     enable = true;
-    settings = {
-      user.name = user.name;
-      user.email = user.email;
-      ui."default-command" = "log";
-      ui.pager = "less -FRX";
-      fsmonitor.backend = "watchman";
-      fsmonitor.watchman."register-snapshot-trigger" = true;
-    }
-    // lib.optionalAttrs (config.home.sessionVariables ? EDITOR) {
-      ui.editor = config.home.sessionVariables.EDITOR;
-    };
+    settings =
+      lib.recursiveUpdate
+        {
+          user.name = user.name;
+          user.email = user.email;
+          ui."default-command" = "log";
+          ui.pager = "less -FR";
+          fsmonitor.backend = "watchman";
+          fsmonitor.watchman."register-snapshot-trigger" = true;
+        }
+        (
+          lib.optionalAttrs (config.home.sessionVariables ? EDITOR) {
+            ui.editor = config.home.sessionVariables.EDITOR;
+          }
+        );
   };
 
   programs.starship = lib.mkIf config.programs.starship.enable {
