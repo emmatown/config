@@ -11,6 +11,7 @@
     ./modules/vcs.nix
     ./modules/nix.nix
     ./modules/js.nix
+    ./modules/secure-enclave-ssh.nix
   ];
 
   home = {
@@ -34,9 +35,6 @@
 
     sessionVariables = {
       EDITOR = "code --wait";
-    }
-    // lib.optionalAttrs pkgs.stdenv.isDarwin {
-      SSH_SK_PROVIDER = "/usr/lib/ssh-keychain.dylib";
     };
   };
 
