@@ -15,4 +15,9 @@
       bindkey "^[[B" down-line-or-beginning-search
     '';
   };
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
 }
