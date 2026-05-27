@@ -7,11 +7,11 @@
 
 {
   imports = [
-    ./modules/shell.nix
-    ./modules/vcs.nix
-    ./modules/nix.nix
-    ./modules/js.nix
-    ./modules/secure-enclave-ssh.nix
+    ./modules/home/shell.nix
+    ./modules/home/vcs.nix
+    ./modules/home/nix.nix
+    ./modules/home/js.nix
+    ./modules/home/secure-enclave-ssh.nix
   ];
 
   home = {
