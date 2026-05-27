@@ -8,10 +8,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-parts.url = "github:hercules-ci/flake-parts";
+    nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
     inputs@{
+      self,
       flake-parts,
       nixpkgs,
       ...
@@ -46,6 +49,25 @@
         ];
 
         flake = {
+          darwinConfigurations.mbp = inputs.nix-darwin.lib.darwinSystem {
+            modules = [
+              (
+                { ... }:
+                {
+                  system.configurationRevision = self.rev or self.dirtyRev or null;
+                  system.stateVersion = 6;
+                  nixpkgs.hostPlatform = "aarch64-darwin";
+                  nix = {
+                    settings.experimental-features = [
+                      "nix-command"
+                      "flakes"
+                    ];
+                  };
+                }
+              )
+            ];
+          };
+
           homeModules.default = ./home.nix;
 
           homeConfigurations = {
