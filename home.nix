@@ -36,6 +36,9 @@
     sessionVariables = {
       EDITOR = "code --wait";
     };
+    sessionPath = [
+      "$HOME/.nix-profile/bin"
+    ];
   };
 
   programs.home-manager.enable = true;
