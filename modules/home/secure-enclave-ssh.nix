@@ -9,5 +9,8 @@
     programs.zsh.initContent = ''
       SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=true /usr/bin/ssh-add -K >/dev/null 2>&1
     '';
+    programs.git.settings = {
+      url."git@github.com:".insteadOf = "https://github.com/";
+    };
   };
 }
