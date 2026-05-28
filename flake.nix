@@ -30,11 +30,7 @@
           modules = [
             ./home.nix
             {
-              home = {
-                inherit username;
-                homeDirectory =
-                  if builtins.match ".*-darwin" system != null then "/Users/${username}" else "/home/${username}";
-              };
+              home.username = username;
             }
           ];
           extraSpecialArgs = {
