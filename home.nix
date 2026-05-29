@@ -29,6 +29,7 @@
     stateVersion = "26.05"; # Please read the comment before changing.
     packages = with pkgs; [
       ripgrep
+      rage
     ];
 
     file = { };
