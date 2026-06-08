@@ -17,7 +17,7 @@ in
     settings = {
       user.name = user.name;
       user.email = user.email;
-      url."git@github.com:".insteadOf = "https://github.com/";
+      url."git@github.com:".pushInsteadOf = "https://github.com/";
     };
   };
 
