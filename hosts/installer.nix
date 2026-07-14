@@ -1,5 +1,9 @@
 { modulesPath, ... }:
 
+let
+  authorizedKeys = import ./authorized-keys.nix;
+in
+
 {
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
@@ -30,7 +34,5 @@
     };
   };
 
-  users.users.root.openssh.authorizedKeys.keys = [
-    "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBPZkvzohKxGJ9Dh5zidMwKNXaqsEsG/8zLyg0C63FBoJ9hoZmvbykcasRA0aKN2OeNG+pBE3fGIFT3zS7Kcaa+sAAAAEc3NoOg=="
-  ];
+  users.users.root.openssh.authorizedKeys.keys = authorizedKeys;
 }

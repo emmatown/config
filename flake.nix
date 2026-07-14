@@ -14,6 +14,14 @@
       url = "github:cpick/nix-rosetta-builder";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v1.0.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -48,7 +56,7 @@
 
       installer = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [ ./nixos/installer.nix ];
+        modules = [ ./hosts/installer.nix ];
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } (
@@ -60,6 +68,11 @@
 
         flake = {
           nixosConfigurations.installer = installer;
+          nixosConfigurations.mini = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            specialArgs = { inherit inputs; };
+            modules = [ ./hosts/mini ];
+          };
 
           packages.x86_64-linux.installer-iso = installer.config.system.build.isoImage;
 
