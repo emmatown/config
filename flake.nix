@@ -10,6 +10,10 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-rosetta-builder = {
+      url = "github:cpick/nix-rosetta-builder";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -17,6 +21,7 @@
       self,
       flake-parts,
       nixpkgs,
+      nix-rosetta-builder,
       ...
     }:
     let
@@ -60,6 +65,7 @@
 
           darwinConfigurations.mbp = inputs.nix-darwin.lib.darwinSystem {
             modules = [
+              nix-rosetta-builder.darwinModules.default
               (
                 { ... }:
                 {
@@ -71,7 +77,9 @@
                       "nix-command"
                       "flakes"
                     ];
+                    # linux-builder.enable = true;
                   };
+                  nix-rosetta-builder.onDemand = true;
                 }
               )
             ];
