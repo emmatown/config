@@ -40,6 +40,11 @@
             inherit inputs;
           };
         };
+
+      installer = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ ./nixos/installer.nix ];
+      };
     in
     flake-parts.lib.mkFlake { inherit inputs; } (
       _top@{ ... }:
@@ -49,6 +54,10 @@
         ];
 
         flake = {
+          nixosConfigurations.installer = installer;
+
+          packages.x86_64-linux.installer-iso = installer.config.system.build.isoImage;
+
           darwinConfigurations.mbp = inputs.nix-darwin.lib.darwinSystem {
             modules = [
               (
