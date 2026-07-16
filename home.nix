@@ -30,6 +30,7 @@
     packages = with pkgs; [
       ripgrep
       rage
+      terraform
     ];
 
     file = { };
