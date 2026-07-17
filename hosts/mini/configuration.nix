@@ -35,6 +35,14 @@ in
     };
     lanzaboote = {
       enable = true;
+      # uncomment for initial install
+      # comment out after install so allowUnsigned is false again
+      # autoGenerateKeys.enable = true;
+      # autoEnrollKeys = {
+      #   enable = true;
+      #   includeMicrosoftKeys = false;
+      #   allowBrickingMyMachine = true;
+      # };
       pkiBundle = "/var/lib/sbctl";
     };
     zfs.forceImportRoot = false;

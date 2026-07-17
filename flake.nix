@@ -78,8 +78,6 @@
             modules = [ ./hosts/mini ];
           };
 
-          packages.x86_64-linux.installer-iso = installer.config.system.build.isoImage;
-
           darwinConfigurations.mbp = inputs.nix-darwin.lib.darwinSystem {
             modules = [
               nix-rosetta-builder.darwinModules.default
@@ -94,6 +92,7 @@
                       "nix-command"
                       "flakes"
                     ];
+                    # for bootstrapping nix-rosetta-builder
                     # linux-builder.enable = true;
                   };
                   nix-rosetta-builder.onDemand = true;

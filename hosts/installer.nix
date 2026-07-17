@@ -3,7 +3,12 @@
 let
   authorizedKeys = import ../authorized-keys.nix;
 in
+# nix build .#nixosConfigurations.installer.config.system.build.isoImage
 
+# mac
+# diskutil list
+# diskutil unmountDisk /dev/diskN
+# sudo dd if=result/iso/blah.iso of=/dev/rdiskN bs=4m status=progress
 {
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
