@@ -4,14 +4,17 @@
   "nix.serverSettings": {
     "nixd": {
       "nixpkgs": {
-        "expr": "import (builtins.getFlake \"${workspaceFolder}\").inputs.nixpkgs { system = \"aarch64-darwin\"; }",
+        "expr": "import (builtins.getFlake \"git+file://${workspaceFolder}\").inputs.nixpkgs { system = \"aarch64-darwin\"; }",
       },
       "formatting": {
         "command": ["nixfmt"],
       },
       "options": {
+        "nixos": {
+          "expr": "(builtins.getFlake \"git+file://${workspaceFolder}\").nixosConfigurations.mini.options",
+        },
         "home-manager": {
-          "expr": "(builtins.getFlake \"${workspaceFolder}\").homeConfigurations.\"emma-darwin\".options",
+          "expr": "(builtins.getFlake \"git+file://${workspaceFolder}\").homeConfigurations.\"emma-darwin\".options",
         },
       },
     },

@@ -1,7 +1,7 @@
 { modulesPath, ... }:
 
 let
-  authorizedKeys = import ./authorized-keys.nix;
+  authorizedKeys = import ../authorized-keys.nix;
 in
 
 {

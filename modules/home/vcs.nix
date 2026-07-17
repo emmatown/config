@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  unstablePkgs,
   ...
 }:
 
@@ -25,6 +26,7 @@ in
 
   programs.jujutsu = {
     enable = true;
+    package = unstablePkgs.jujutsu;
     settings =
       lib.recursiveUpdate
         {
