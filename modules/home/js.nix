@@ -1,12 +1,11 @@
 {
   pkgs,
-  lib,
-  config,
+  unstablePkgs,
   ...
 }:
 {
   home.packages = with pkgs; [
-    (rustPlatform.buildRustPackage rec {
+    (rustPlatform.buildRustPackage {
       pname = "pyn";
       version = "0.6.1";
 
@@ -19,11 +18,12 @@
       doCheck = false;
       cargoHash = "sha256-3wPfzmAhoOhaS9rtaCUfLRDaHMpuEuIR2P33eXyXL4Y=";
     })
-    proto
+    unstablePkgs.fnm
+    unstablePkgs.pnpm
   ];
   programs.zsh = {
     initContent = ''
-      eval "$(proto activate zsh)"
+      eval "$(fnm env --use-on-cd --shell zsh)"
     '';
     shellAliases = {
       r = "pyn";
