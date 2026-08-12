@@ -15,6 +15,7 @@ in
 {
   programs.git = {
     enable = true;
+    ignores = [ ".pnpm" ];
     settings = {
       user.name = user.name;
       user.email = user.email;
