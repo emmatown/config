@@ -15,7 +15,10 @@ in
 {
   programs.git = {
     enable = true;
-    ignores = [ ".pnpm" ];
+    ignores = [
+      ".pnpm"
+      ".pnpm-store"
+    ];
     settings = {
       user.name = user.name;
       user.email = user.email;
