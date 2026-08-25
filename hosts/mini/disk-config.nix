@@ -15,7 +15,6 @@
             mountOptions = [ "umask=0077" ];
           };
         };
-
         root = {
           size = "100%";
           content = {
@@ -25,13 +24,30 @@
             enrollRecovery = true;
             settings.allowDiscards = true;
             content = {
-              type = "filesystem";
-              format = "ext4";
-              mountpoint = "/";
+              type = "btrfs";
+              subvolumes = {
+                "@root" = {
+                  mountpoint = "/";
+                  mountOptions = [ "compress=zstd" "noatime" ];
+                };
+                "@nix" = {
+                  mountpoint = "/nix";
+                  mountOptions = [ "compress=zstd" "noatime" ];
+                };
+                "@log" = {
+                  mountpoint = "/var/log";
+                  mountOptions = [ "compress=zstd" "noatime" ];
+                };
+                "@vm-state" = {
+                  mountpoint = "/var/lib/vm-state";
+                  mountOptions = [ "compress=zstd" "noatime" ];
+                };
+              };
             };
           };
         };
       };
     };
   };
+  services.btrfs.autoScrub.enable = true;
 }
