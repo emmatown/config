@@ -1,0 +1,432 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mini VM bootstrap API",
+    "version": "0.1.0",
+    "description": "Local-only initial implementation. No passkeys, browser sessions, events or network policy mutations yet."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:9080"
+    }
+  ],
+  "security": [
+    {
+      "bootstrap": []
+    }
+  ],
+  "paths": {
+    "/api/v1/templates": {
+      "get": {
+        "summary": "List registered revisions, without host paths",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bootstrap bearer token"
+          }
+        }
+      }
+    },
+    "/api/v1/machines": {
+      "get": {
+        "summary": "List retained active records",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Machine"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bootstrap bearer token"
+          }
+        }
+      },
+      "post": {
+        "summary": "Provision an isolated, stopped development VM",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Durably queued; not guest readiness.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Operation"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or unavailable capacity"
+          },
+          "412": {
+            "description": "Stale resource revision"
+          },
+          "428": {
+            "description": "Missing revision"
+          },
+          "401": {
+            "description": "Missing or invalid bootstrap bearer token"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMachine"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/machines/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Machine"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown/deleted machine"
+          },
+          "401": {
+            "description": "Missing or invalid bootstrap bearer token"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a stopped record while retaining its disk",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quoted revision from GET, e.g. \"2\"."
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Durably queued; not guest readiness.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Operation"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or unavailable capacity"
+          },
+          "412": {
+            "description": "Stale resource revision"
+          },
+          "428": {
+            "description": "Missing revision"
+          },
+          "401": {
+            "description": "Missing or invalid bootstrap bearer token"
+          }
+        }
+      }
+    },
+    "/api/v1/machines/{id}/actions/{action}": {
+      "post": {
+        "summary": "Start or cleanly stop a VM",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["start", "stop"]
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quoted revision from GET, e.g. \"2\"."
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Durably queued; not guest readiness.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Operation"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or unavailable capacity"
+          },
+          "412": {
+            "description": "Stale resource revision"
+          },
+          "428": {
+            "description": "Missing revision"
+          },
+          "401": {
+            "description": "Missing or invalid bootstrap bearer token"
+          }
+        }
+      }
+    },
+    "/api/v1/operations/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Operation"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown operation"
+          },
+          "401": {
+            "description": "Missing or invalid bootstrap bearer token"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bootstrap": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "CreateMachine": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "template_revision", "memory_mib", "vcpus"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])?$"
+          },
+          "template_revision": {
+            "type": "string"
+          },
+          "memory_mib": {
+            "type": "integer",
+            "minimum": 512,
+            "maximum": 16384
+          },
+          "vcpus": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          }
+        }
+      },
+      "Operation": {
+        "type": "object",
+        "required": ["id", "machine_id", "action", "state"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "machine_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["create", "start", "stop", "delete"]
+          },
+          "state": {
+            "type": "string",
+            "enum": ["queued", "running", "succeeded", "failed"]
+          },
+          "error": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "Machine": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])?$"
+          },
+          "template_revision": {
+            "type": "string"
+          },
+          "memory_mib": {
+            "type": "integer",
+            "minimum": 512,
+            "maximum": 16384
+          },
+          "vcpus": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string",
+            "description": "Last completed lifecycle state; not live guest health."
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "network": {
+            "const": "none"
+          }
+        }
+      }
+    }
+  }
+}
