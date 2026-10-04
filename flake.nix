@@ -21,6 +21,10 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    microvm = {
+      url = "github:microvm-nix/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v1.1.0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -40,6 +44,7 @@
         {
           username,
           system,
+          extraModules ? [ ],
         }:
         inputs.home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
@@ -51,7 +56,8 @@
             {
               home.username = username;
             }
-          ];
+          ]
+          ++ extraModules;
           extraSpecialArgs = {
             inherit inputs;
             unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${system};
@@ -76,6 +82,11 @@
             system = "x86_64-linux";
             specialArgs = { inherit inputs; };
             modules = [ ./hosts/mini ];
+          };
+          nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            specialArgs = { inherit inputs; };
+            modules = [ ./hosts/laptop ];
           };
 
           darwinConfigurations.mbp = inputs.nix-darwin.lib.darwinSystem {
@@ -107,6 +118,16 @@
             emma-darwin = mkHome {
               username = "emma";
               system = "aarch64-darwin";
+              extraModules = [
+                (
+                  { pkgs, ... }:
+                  {
+                    home.packages = [
+                      (pkgs.terraform.overrideAttrs { doCheck = false; })
+                    ];
+                  }
+                )
+              ];
             };
 
             emma-linux = mkHome {

@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 {
   programs.starship.enable = true;
@@ -7,8 +7,7 @@
     enable = true;
     autocd = true;
     initContent = lib.mkBefore ''
-      . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
-      path=("$HOME/.nix-profile/bin" ''${path:#$HOME/.nix-profile/bin})
+      . "${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh"
 
       autoload -U up-line-or-beginning-search
       autoload -U down-line-or-beginning-search
@@ -18,9 +17,9 @@
       bindkey "^[[B" down-line-or-beginning-search
     '';
   };
-  programs.direnv = {
-    enable = true;
-    enableZshIntegration = true;
-    nix-direnv.enable = true;
-  };
+  # programs.direnv = {
+  #   enable = true;
+  #   enableZshIntegration = true;
+  #   nix-direnv.enable = true;
+  # };
 }
