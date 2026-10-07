@@ -19,7 +19,7 @@
       cargoHash = "sha256-3wPfzmAhoOhaS9rtaCUfLRDaHMpuEuIR2P33eXyXL4Y=";
     })
     unstablePkgs.fnm
-    unstablePkgs.pnpm
+    unstablePkgs.pnpm_11
   ];
   programs.zsh = {
     initContent = ''
