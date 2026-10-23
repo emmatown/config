@@ -80,7 +80,7 @@
 
           darwinConfigurations.mbp = inputs.nix-darwin.lib.darwinSystem {
             modules = [
-              nix-rosetta-builder.darwinModules.default
+              # nix-rosetta-builder.darwinModules.default
               (
                 { ... }:
                 {
@@ -95,7 +95,7 @@
                     # for bootstrapping nix-rosetta-builder
                     # linux-builder.enable = true;
                   };
-                  nix-rosetta-builder.onDemand = true;
+                  # nix-rosetta-builder.onDemand = true;
                 }
               )
             ];

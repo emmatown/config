@@ -37,6 +37,10 @@
 
     sessionVariables = {
       EDITOR = "code --wait";
+    }
+    // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+      NODE_OPTIONS = "--use-openssl-ca";
     };
     sessionPath = [
       "$HOME/.nix-profile/bin"
